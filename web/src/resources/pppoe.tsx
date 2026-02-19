@@ -7,7 +7,6 @@ import {
   Edit,
   TextInput,
   Create,
-  Show,
   BooleanInput,
   NumberInput,
   required,
@@ -20,7 +19,6 @@ import {
   CreateButton,
   useTranslate,
   useListContext,
-  RaRecord,
   FunctionField,
   SelectInput,
   ReferenceInput,
@@ -31,16 +29,8 @@ import {
   Typography,
   Card,
   Avatar,
-  useTheme,
-  alpha,
 } from '@mui/material';
-import { useMemo } from 'react';
-import {
-  Router as PppoeIcon,
-  CheckCircle as EnabledIcon,
-  Cancel as DisabledIcon,
-  Speed as SpeedIcon,
-} from '@mui/icons-material';
+import { Router as PppoeIcon, CheckCircle as EnabledIcon, Cancel as DisabledIcon } from '@mui/icons-material';
 import {
   ServerPagination,
   FormSection,
@@ -48,16 +38,14 @@ import {
   FieldGridItem,
   formLayoutSx,
   controlWrapperSx,
-  DetailSectionCard,
-  DetailItem,
 } from '../components';
 
 const LARGE_LIST_PER_PAGE = 50;
 
 // ============ 类型定义 ============
 
-interface PppoeProfile extends RaRecord {
-  id?: number;
+interface PppoeProfile {
+  id: number;
   name?: string;
   node_id?: number;
   status?: 'enabled' | 'disabled';
@@ -88,8 +76,8 @@ interface PppoeProfile extends RaRecord {
   created_at?: string;
 }
 
-interface PppoeUser extends RaRecord {
-  id?: number;
+interface PppoeUser {
+  id: number;
   node_id?: number;
   profile_id?: number;
   username?: string;
@@ -122,19 +110,6 @@ const formatRate = (rate?: number): string => {
     return `${(rate / 1024).toFixed(1)} Mbps`;
   }
   return `${rate} Kbps`;
-};
-
-const formatTime = (seconds?: number): string => {
-  if (!seconds || seconds === 0) return '-';
-  if (seconds >= 3600) {
-    const hours = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
-  }
-  if (seconds >= 60) {
-    return `${Math.floor(seconds / 60)}m`;
-  }
-  return `${seconds}s`;
 };
 
 // ============ 状态组件 ============
@@ -265,8 +240,7 @@ const UserListActions = () => {
 
 const ProfileListContent = () => {
   const translate = useTranslate();
-  const theme = useTheme();
-  const { data, isLoading, total } = useListContext<PppoeProfile>();
+  const { data, isLoading, total } = useListContext();
 
   if (isLoading) {
     return <Typography>Loading...</Typography>;
@@ -638,7 +612,7 @@ export const PppoeProfileCreate = () => {
               />
             </FieldGridItem>
             <FieldGridItem>
-              <Box sx={controlWrapperSx}}>
+              <Box sx={controlWrapperSx}>
                 <BooleanInput
                   source="bind_mac"
                   label={translate('resources.pppoe-profiles.fields.bind_mac', { _: '绑定MAC' })}

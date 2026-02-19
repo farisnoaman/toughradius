@@ -24,6 +24,12 @@ const resourcePathMap: Record<string, string> = {
   'radius/online': 'sessions',
   'radius/accounting': 'accounting',
   'radius/profiles': 'radius-profiles',
+  'pppoe/profiles': 'pppoe-profiles',
+  'pppoe/users': 'pppoe-users',
+  'hotspot/profiles': 'hotspot-profiles',
+  'hotspot/users': 'hotspot-users',
+  'voucher/batches': 'voucher-batches',
+  'vouchers': 'vouchers',
   'system/config/schemas': 'system/config/schemas',
 };
 
@@ -46,7 +52,7 @@ export const dataProvider: DataProvider = {
       sort: field,
       order,
       page,
-      perPage,
+      pageSize: perPage,
       ...params.filter,
     };
 
@@ -81,7 +87,7 @@ export const dataProvider: DataProvider = {
       sort: field,
       order: order,
       page: page,
-      perPage,
+      pageSize: perPage,
       ...params.filter,
       [params.target]: params.id,
     };

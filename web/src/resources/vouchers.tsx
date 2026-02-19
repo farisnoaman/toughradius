@@ -21,45 +21,29 @@ import {
   CreateButton,
   useTranslate,
   useListContext,
-  RaRecord,
   FunctionField,
   SelectInput,
   ReferenceInput,
   useNotify,
-  useRefresh,
 } from 'react-admin';
 import {
   Box,
   Chip,
   Typography,
   Card,
-  CardContent,
-  Stack,
   Avatar,
   IconButton,
   Tooltip,
-  useTheme,
-  useMediaQuery,
-  alpha,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
 } from '@mui/material';
-import { useMemo, useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import {
   ConfirmationNumber as VoucherIcon,
   ContentCopy as CopyIcon,
-  Refresh as RefreshIcon,
-  ArrowBack as BackIcon,
   CheckCircle as EnabledIcon,
   Cancel as DisabledIcon,
-  Add as AddIcon,
 } from '@mui/icons-material';
 import {
   ServerPagination,
-  ActiveFilters,
   FormSection,
   FieldGrid,
   FieldGridItem,
@@ -67,15 +51,14 @@ import {
   controlWrapperSx,
   DetailSectionCard,
   DetailItem,
-  EmptyValue,
 } from '../components';
 
 const LARGE_LIST_PER_PAGE = 50;
 
 // ============ 类型定义 ============
 
-interface VoucherBatch extends RaRecord {
-  id?: number;
+interface VoucherBatch {
+  id: number;
   name?: string;
   node_id?: number;
   profile_id?: number;
@@ -90,8 +73,8 @@ interface VoucherBatch extends RaRecord {
   created_at?: string;
 }
 
-interface Voucher extends RaRecord {
-  id?: number;
+interface Voucher {
+  id: number;
   batch_id?: number;
   code?: string;
   password?: string;
@@ -285,8 +268,6 @@ const VoucherListActions = () => {
 
 const BatchListContent = () => {
   const translate = useTranslate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { data, isLoading, total } = useListContext<VoucherBatch>();
 
   if (isLoading) {
@@ -386,6 +367,47 @@ export const VoucherList = () => {
           <TextField
             source="batch_id"
             label={translate('resources.vouchers.fields.batch_id', { _: '批次ID' })}
+          />
+          <FunctionField
+            source="expire_time"
+            label={translate('resources.vouchers.fields.expire_time', { _: '过期时间' })}
+            render={(record: Voucher) => formatDate(record.expire_time)}
+          />
+          <DateField
+            source="created_at"
+            label={translate('resources.vouchers.fields.created_at', { _: '创建时间' })}
+            showTime
+          />
+        </Datagrid>
+      </Card>
+    </List>
+  );
+};
+
+// BatchVoucherList displays vouchers filtered by batch_id, used inside VoucherBatchShow
+const BatchVoucherList = ({ batchId }: { batchId: number }) => {
+  const translate = useTranslate();
+  return (
+    <List
+      resource="vouchers"
+      filter={{ batch_id: batchId }}
+      sort={{ field: 'created_at', order: 'DESC' }}
+      perPage={LARGE_LIST_PER_PAGE}
+      pagination={<ServerPagination />}
+      empty={false}
+      actions={false}
+    >
+      <Card elevation={0} sx={{ borderRadius: 2, border: theme => `1px solid ${theme.palette.divider}`, overflow: 'hidden' }}>
+        <Datagrid bulkActionButtons={false}>
+          <FunctionField
+            source="code"
+            label={translate('resources.vouchers.fields.code', { _: '券码' })}
+            render={() => <VoucherCodeField />}
+          />
+          <FunctionField
+            source="status"
+            label={translate('resources.vouchers.fields.status', { _: '状态' })}
+            render={(record: Voucher) => <VoucherStatusIndicator status={record.status} />}
           />
           <FunctionField
             source="expire_time"
@@ -608,36 +630,46 @@ export const VoucherBatchEdit = () => {
 
 // ============ 详情页 ============
 
-export const VoucherBatchShow = () => {
+// VoucherBatchDetails is the inner component that uses useRecordContext inside Show
+const VoucherBatchDetails = () => {
   const record = useRecordContext<VoucherBatch>();
   const translate = useTranslate();
 
   if (!record) return null;
 
   return (
-    <Show>
-      <Box sx={{ p: 3 }}>
-        <DetailSectionCard
-          title={translate('resources.voucher-batches.sections.info.title', { _: '批次信息' })}
-        >
-          <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' } }}>
-            <DetailItem label={translate('resources.voucher-batches.fields.id', { _: 'ID' })} value={String(record.id || '-')} />
-            <DetailItem label={translate('resources.voucher-batches.fields.name', { _: '名称' })} value={record.name || '-'} />
-            <DetailItem label={translate('resources.voucher-batches.fields.total_count', { _: '总数' })} value={String(record.total_count || 0)} />
-            <DetailItem label={translate('resources.voucher-batches.fields.used_count', { _: '已使用' })} value={String(record.used_count || 0)} />
-            <DetailItem label={translate('resources.voucher-batches.fields.expire_time', { _: '过期时间' })} value={formatTimestamp(record.expire_time)} />
-            <DetailItem label={translate('resources.voucher-batches.fields.status', { _: '状态' })} value={<BatchStatusIndicator status={record.status} />} />
-            <DetailItem label={translate('resources.voucher-batches.fields.created_at', { _: '创建时间' })} value={formatTimestamp(record.created_at)} />
-          </Box>
-        </DetailSectionCard>
+    <Box sx={{ p: 3 }}>
+      <DetailSectionCard
+        title={translate('resources.voucher-batches.sections.info.title', { _: '批次信息' })}
+        icon={<VoucherIcon />}
+      >
+        <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' } }}>
+          <DetailItem label={translate('resources.voucher-batches.fields.id', { _: 'ID' })} value={String(record.id || '-')} />
+          <DetailItem label={translate('resources.voucher-batches.fields.name', { _: '名称' })} value={record.name || '-'} />
+          <DetailItem label={translate('resources.voucher-batches.fields.total_count', { _: '总数' })} value={String(record.total_count || 0)} />
+          <DetailItem label={translate('resources.voucher-batches.fields.used_count', { _: '已使用' })} value={String(record.used_count || 0)} />
+          <DetailItem label={translate('resources.voucher-batches.fields.expire_time', { _: '过期时间' })} value={formatTimestamp(record.expire_time)} />
+          <DetailItem label={translate('resources.voucher-batches.fields.status', { _: '状态' })} value={<BatchStatusIndicator status={record.status} />} />
+          <DetailItem label={translate('resources.voucher-batches.fields.created_at', { _: '创建时间' })} value={formatTimestamp(record.created_at)} />
+        </Box>
+      </DetailSectionCard>
 
+      <Box sx={{ mt: 3 }}>
         <DetailSectionCard
           title={translate('resources.voucher-batches.sections.vouchers.title', { _: '券码列表' })}
-          sx={{ mt: 3 }}
+          icon={<VoucherIcon />}
         >
-          <VoucherList />
+          <BatchVoucherList batchId={record.id} />
         </DetailSectionCard>
       </Box>
+    </Box>
+  );
+};
+
+export const VoucherBatchShow = () => {
+  return (
+    <Show>
+      <VoucherBatchDetails />
     </Show>
   );
 };

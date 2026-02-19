@@ -7,7 +7,6 @@ import {
   Edit,
   TextInput,
   Create,
-  Show,
   BooleanInput,
   NumberInput,
   required,
@@ -20,7 +19,6 @@ import {
   CreateButton,
   useTranslate,
   useListContext,
-  RaRecord,
   FunctionField,
   SelectInput,
   ReferenceInput,
@@ -31,18 +29,11 @@ import {
   Typography,
   Card,
   Avatar,
-  useTheme,
-  useMediaQuery,
-  alpha,
 } from '@mui/material';
-import { useMemo } from 'react';
 import {
   Wifi as HotspotIcon,
   CheckCircle as EnabledIcon,
   Cancel as DisabledIcon,
-  Devices as DevicesIcon,
-  Speed as SpeedIcon,
-  Schedule as TimeIcon,
 } from '@mui/icons-material';
 import {
   ServerPagination,
@@ -51,16 +42,14 @@ import {
   FieldGridItem,
   formLayoutSx,
   controlWrapperSx,
-  DetailSectionCard,
-  DetailItem,
 } from '../components';
 
 const LARGE_LIST_PER_PAGE = 50;
 
 // ============ 类型定义 ============
 
-interface HotspotProfile extends RaRecord {
-  id?: number;
+interface HotspotProfile {
+  id: number;
   name?: string;
   node_id?: number;
   status?: 'enabled' | 'disabled';
@@ -84,8 +73,8 @@ interface HotspotProfile extends RaRecord {
   created_at?: string;
 }
 
-interface HotspotUser extends RaRecord {
-  id?: number;
+interface HotspotUser {
+  id: number;
   node_id?: number;
   profile_id?: number;
   username?: string;
@@ -112,30 +101,6 @@ const formatRate = (rate?: number): string => {
     return `${(rate / 1024).toFixed(1)} Mbps`;
   }
   return `${rate} Kbps`;
-};
-
-const formatTime = (minutes?: number): string => {
-  if (!minutes || minutes === 0) return '-';
-  if (minutes >= 60) {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
-  }
-  return `${minutes}m`;
-};
-
-const formatBytes = (bytes?: number): string => {
-  if (!bytes || bytes === 0) return '-';
-  if (bytes >= 1024 * 1024 * 1024) {
-    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-  }
-  if (bytes >= 1024 * 1024) {
-    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-  }
-  if (bytes >= 1024) {
-    return `${(bytes / 1024).toFixed(2)} KB`;
-  }
-  return `${bytes} B`;
 };
 
 // ============ 状态组件 ============
@@ -269,8 +234,7 @@ const UserListActions = () => {
 
 const ProfileListContent = () => {
   const translate = useTranslate();
-  const theme = useTheme();
-  const { data, isLoading, total } = useListContext<HotspotProfile>();
+  const { data, isLoading, total } = useListContext();
 
   if (isLoading) {
     return <Typography>Loading...</Typography>;

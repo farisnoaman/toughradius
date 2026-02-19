@@ -64,6 +64,28 @@ import {
   OperatorCreate,
   OperatorShow,
 } from './resources/operators';
+import {
+  PppoeProfileList,
+  PppoeProfileEdit,
+  PppoeProfileCreate,
+  PppoeUserList,
+  PppoeUserEdit,
+  PppoeUserCreate,
+} from './resources/pppoe';
+import {
+  HotspotProfileList,
+  HotspotProfileEdit,
+  HotspotProfileCreate,
+  HotspotUserList,
+  HotspotUserEdit,
+  HotspotUserCreate,
+} from './resources/hotspot';
+import {
+  VoucherBatchList,
+  VoucherBatchCreate,
+  VoucherBatchEdit,
+  VoucherBatchShow,
+} from './resources/vouchers';
 
 const App = () => (
   <Admin
@@ -111,6 +133,47 @@ const App = () => (
       edit={RadiusProfileEdit}
       create={RadiusProfileCreate}
       show={RadiusProfileShow}
+    />
+
+    {/* PPPoE 配置 */}
+    <Resource
+      name="pppoe/profiles"
+      list={PppoeProfileList}
+      edit={PppoeProfileEdit}
+      create={PppoeProfileCreate}
+    />
+
+    {/* PPPoE 用户管理 */}
+    <Resource
+      name="pppoe/users"
+      list={PppoeUserList}
+      edit={PppoeUserEdit}
+      create={PppoeUserCreate}
+    />
+
+    {/* Hotspot 配置 */}
+    <Resource
+      name="hotspot/profiles"
+      list={HotspotProfileList}
+      edit={HotspotProfileEdit}
+      create={HotspotProfileCreate}
+    />
+
+    {/* Hotspot 用户管理 */}
+    <Resource
+      name="hotspot/users"
+      list={HotspotUserList}
+      edit={HotspotUserEdit}
+      create={HotspotUserCreate}
+    />
+
+    {/* Voucher 批次管理 */}
+    <Resource
+      name="voucher/batches"
+      list={VoucherBatchList}
+      edit={VoucherBatchEdit}
+      create={VoucherBatchCreate}
+      show={VoucherBatchShow}
     />
 
     {/* NAS 设备管理 */}

@@ -7,6 +7,8 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import RouterOutlinedIcon from '@mui/icons-material/RouterOutlined';
 import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
+import WifiIcon from '@mui/icons-material/Wifi';
+import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
 import { Box, useTheme } from '@mui/material';
 import { MenuItemLink, MenuProps, useGetIdentity, useTranslate } from 'react-admin';
 
@@ -18,6 +20,11 @@ const menuItems = [
   { to: '/radius/profiles', labelKey: 'menu.radius_profiles', icon: <SettingsSuggestOutlinedIcon /> },
   { to: '/radius/online', labelKey: 'menu.online_sessions', icon: <SensorsOutlinedIcon /> },
   { to: '/radius/accounting', labelKey: 'menu.accounting', icon: <ReceiptLongOutlinedIcon /> },
+  { to: '/pppoe/profiles', labelKey: 'menu.pppoe_profiles', icon: <RouterOutlinedIcon /> },
+  { to: '/pppoe/users', labelKey: 'menu.pppoe_users', icon: <PeopleAltOutlinedIcon /> },
+  { to: '/hotspot/profiles', labelKey: 'menu.hotspot_profiles', icon: <WifiIcon /> },
+  { to: '/hotspot/users', labelKey: 'menu.hotspot_users', icon: <PeopleAltOutlinedIcon /> },
+  { to: '/voucher/batches', labelKey: 'menu.voucher_batches', icon: <ConfirmationNumberIcon /> },
   { to: '/system/config', labelKey: 'menu.system_config', icon: <SettingsOutlinedIcon />, permissions: ['super', 'admin'] },
   { to: '/system/operators', labelKey: 'menu.operators', icon: <AdminPanelSettingsOutlinedIcon />, permissions: ['super', 'admin'] },
 ];
